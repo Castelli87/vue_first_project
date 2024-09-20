@@ -1,8 +1,26 @@
 <script setup>
-import { defineProps } from "vue";
+import { defineProps, ref, computed } from "vue";
 
-defineProps({
+/* Define the props and store them in a variable */
+const props = defineProps({
   job: Object,
+});
+
+/* Create a reactive boolean to control whether the full description is shown */
+const showFullDescription = ref(false);
+
+/* Toggle the boolean to switch between showing and hiding the full description */
+const toggleDescription = () => {
+  showFullDescription.value = !showFullDescription.value;
+};
+
+/* Use a computed property to return the full or truncated description based on the toggle */
+const truncateDescription = computed(() => {
+  let description = props.job.description;
+  if (!showFullDescription.value) {
+    description = description.substring(0, 90) + "...";
+  }
+  return description;
 });
 </script>
 
@@ -15,7 +33,15 @@ defineProps({
       </div>
 
       <div class="mb-5">
-        {{ job.description }}
+        <div>
+          {{ truncateDescription }}
+        </div>
+        <button
+          @click="toggleDescription"
+          class="text-green-500 hover:text-green-600 mb-5"
+        >
+          {{ showFullDescription ? "Less" : "More" }}
+        </button>
       </div>
 
       <h3 class="text-green-500 mb-2">{{ job.salary }}</h3>
@@ -24,7 +50,7 @@ defineProps({
 
       <div class="flex flex-col lg:flex-row justify-between mb-4">
         <div class="text-orange-700 mb-3">
-          <i class="fa-solid fa-location-dot text-lg"></i>
+          <i class="pi pi-map-marker text-orange-700  "></i>
           {{ job.location }}
         </div>
         <a
